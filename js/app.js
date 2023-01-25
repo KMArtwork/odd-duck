@@ -6,6 +6,10 @@ const productImages = [ 'bag.jpg', 'banana.jpg', 'bathroom.jpg', 'boots.jpg', 'b
 // array that our Product objects will be pushed into
 let productArr = [];
 
+// used to prevent images from displaying two rounds in a row
+let previousRoundIndices = [];
+let excludedIndices = [];
+
 // 'rounds' is current total number of rounds that have been played in one sitting, 'maxRounds' is set by the user 
 let rounds = 0;
 let maxRounds = 25;
@@ -69,6 +73,7 @@ function determineMaxRounds () {
     let labelEl = document.createElement('label');
     labelEl.for = 'numberOfRounds';
     labelEl.innerText = 'How Many Rounds of Odd Duck Would You Like To Play?';
+    labelEl.style.textAlign = 'center';
 
     let buttonEl = document.createElement('button');
     buttonEl.setAttribute('type', 'submit');
@@ -76,8 +81,8 @@ function determineMaxRounds () {
 
     formEl.addEventListener('submit', startGame);
 
-    formEl.appendChild(inputEl);
     formEl.appendChild(labelEl);
+    formEl.appendChild(inputEl);
     formEl.appendChild(buttonEl);
     displayEl.appendChild(formEl);
     
@@ -87,32 +92,42 @@ function determineMaxRounds () {
 // shows results of products shown & clicked when user is finished
 function displayResults () {
 
-    let displayEl = document.getElementById('productDisplay');
-    displayEl.style.display = 'block';
+    let resultListEl = document.getElementById('resultsList');
+    // displayEl.style.display = 'block';
 
-    while (displayEl.childElementCount > 0) {
-        displayEl.removeChild(displayEl.lastChild)
-    }
+    // while (displayEl.childElementCount > 0) {
+    //     displayEl.removeChild(displayEl.lastChild)
+    // }
 
     productArr.forEach(element => {
         let resultText = `${element.name} was viewed ${element.showCount} times and voted for ${element.clickCount} times.`;
-        let resultEl = document.createElement('p');
+        let resultEl = document.createElement('li');
         resultEl.innerText = resultText;
 
-        displayEl.appendChild(resultEl);
+        resultListEl.appendChild(resultEl);
     });
 
-    document.getElementById('results').style.display = 'none';
+    document.getElementById('viewResults').style.display = 'none';
+
+    showChart();
 
 }
 
 // populates screen with a number of images from the productsArr
 function populateImages(number = 3) {
 
+    let displayEl = document.getElementById('productDisplay');
+    
     // displays 'view results' button when the max amount of rounds has been reached
     if (rounds >= maxRounds) {
         alert(`You've completed ${maxRounds} rounds of odd duck! Thank you for participating.`);
-        let buttonEl = document.getElementById('results');
+        
+        while (displayEl.childElementCount > 0) {
+            displayEl.removeChild(displayEl.lastChild)
+        }
+
+        let buttonEl = document.getElementById('viewResults');
+        console.log(buttonEl);
         buttonEl.style.display = 'block';
         buttonEl.style.width = '25%';
         buttonEl.addEventListener('click', displayResults);
@@ -120,25 +135,37 @@ function populateImages(number = 3) {
     }
     
     let numberOfImages = number;
-    let previousIndices = [];
-    
-    let displayEl = document.getElementById('productDisplay');
+
+    // array of image indices per invocation of populateImages();
+    let tempIndices = [];
 
     // removes any child elements from the parent so that new images can be added
     while (displayEl.childElementCount > 0) {
         displayEl.removeChild(displayEl.lastChild)
     }
 
+    // only runs on the second+ invocation of this function. gets previous round's indices and excludes them from this round
+    if (previousRoundIndices.length > 0){
+            
+        previousRoundIndices.forEach(element => {
+            excludedIndices.push(element);
+        });
+    }
+
     // generates a number of product images depending on the `number` argument we pass in when invoking `populateImages`
     for (let i = 0; i < numberOfImages; i++) {
 
+        // generates inital random index
         let j = generateRandomIndex(productArr);
+
         // ensures that indices are not repeated for a given set of product images
-        while (previousIndices.includes(j)) {
+        while (excludedIndices.includes(j)) {
             j = generateRandomIndex(productArr);
         }
         // adds randomly generated index into an array that we can check against on the next loop
-        previousIndices.push(j);
+        tempIndices.push(j);
+        excludedIndices.push(j);
+
         // creates `img` element for a product and sets relevant properties
         let productImage = document.createElement('img');
         productImage.src = productArr[j].filePath;
@@ -148,8 +175,84 @@ function populateImages(number = 3) {
         displayEl.appendChild(productImage);
     }
 
+    console.log(previousRoundIndices);
+    console.log(tempIndices);
+    console.log(excludedIndices);
+
+    // clears the array of the indices from last round in preparation for storing this current round's indices, which will become the previous round's indices the next time the function is invoked.
+
+    let loopLength = previousRoundIndices.length;
+    for (let n = 0; n < loopLength; n++) {
+        previousRoundIndices.pop();
+    }
+
+    loopLength = excludedIndices.length;
+    // clears the array of indices in preparation for the next round
+    for (let n = 0; n < loopLength; n++) {
+        excludedIndices.pop();
+    }
+
+    // adds each index from current round to an array that will be checked next time the populate images function is ran, ensuring that images do not show twice in a row
+    tempIndices.forEach(element => {
+        previousRoundIndices.push(element);
+
+    });
+
     rounds++;
 }
+
+const canvasEl = document.getElementById('chartCanvas');
+const ctx = canvasEl.getContext('2d');
+
+function showChart () {
+
+    new Chart (ctx, {
+        type: 'bar',
+
+        data: {
+
+          labels: 
+            [
+                productArr[0].name, productArr[1].name, productArr[2].name, productArr[3].name, productArr[4].name, productArr[5].name, productArr[6].name, productArr[7].name, productArr[8].name, productArr[9].name, productArr[10].name, productArr[11].name, productArr[12].name, productArr[13].name, productArr[14].name, productArr[15].name, productArr[16].name
+            ],
+
+          datasets: 
+            [
+                {
+                    label: '# of Times Shown',
+
+                    data: [productArr[0].showCount, productArr[1].showCount, productArr[2].showCount, productArr[3].showCount, productArr[4].showCount, productArr[5].showCount, productArr[6].showCount, productArr[7].showCount, productArr[8].showCount, productArr[9].showCount, productArr[10].showCount, productArr[11].showCount, productArr[12].showCount, productArr[13].showCount, productArr[14].showCount, productArr[15].showCount, productArr[16].showCount],
+
+                    borderWidth: 2,
+                    borderColor: 'rgb(122, 255, 255)',
+                    backgroundColor: 'rgb(34, 168, 162)'
+                }, 
+                {
+                    label: '# of Times Clicked',
+
+                    data: [productArr[0].clickCount, productArr[1].clickCount, productArr[2].clickCount, productArr[3].clickCount, productArr[4].clickCount, productArr[5].clickCount, productArr[6].clickCount, productArr[7].clickCount, productArr[8].clickCount, productArr[9].clickCount, productArr[10].clickCount, productArr[11].clickCount, productArr[12].clickCount, productArr[13].clickCount, productArr[14].clickCount, productArr[15].clickCount, productArr[16].clickCount],
+
+                    borderWidth: 2,
+                    borderColor: '#f6f740',
+                    backgroundColor: '#ffca3a'
+                }
+            ]
+        },
+
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+
+      }
+
+    );
+}
+
+
 
 determineMaxRounds();
 generateProducts();
