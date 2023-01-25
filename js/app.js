@@ -71,7 +71,7 @@ function determineMaxRounds () {
     inputEl.name = 'numberOfRounds';
 
     let labelEl = document.createElement('label');
-    labelEl.for = 'numberOfRounds';
+    labelEl.setAttribute('for', 'numberOfRounds');
     labelEl.innerText = 'How Many Rounds of Odd Duck Would You Like To Play?';
     labelEl.style.textAlign = 'center';
 
