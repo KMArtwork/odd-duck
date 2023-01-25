@@ -11,6 +11,6 @@ Odd Duck Products project for Code Fellows, 201.
  ### Links and Resources
 
  Lab 12 Lighthouse Score:
- ![ligthouse score](lighthouse-score-lab12.JPG);
+ ![ligthouse score](lighthouse-score.JPG);
 
  ### Reflections and Comments
