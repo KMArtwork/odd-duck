@@ -32,7 +32,7 @@ Product.prototype.incrementShowCount = function () {
 // click event handler, tracks number of times an image is clicked and repopulates the screen with new images
 Product.prototype.incrementClickCount = function () {
     this.clickCount++;
-    console.log(productArr);
+    // console.log(productArr);
     populateImages();
 }
 
@@ -63,7 +63,7 @@ function determineMaxRounds () {
 
     let formEl = document.createElement('form');
     formEl.id = 'roundsForm';
-    console.log(formEl);
+    // console.log(formEl);
 
     let inputEl = document.createElement('input');
     inputEl.type = 'number';
@@ -93,14 +93,12 @@ function determineMaxRounds () {
 function displayResults () {
 
     let resultListEl = document.getElementById('resultsList');
-    // displayEl.style.display = 'block';
 
-    // while (displayEl.childElementCount > 0) {
-    //     displayEl.removeChild(displayEl.lastChild)
-    // }
+    savesToLocalStorage();
 
     productArr.forEach(element => {
-        let resultText = `${element.name} was viewed ${element.showCount} times and voted for ${element.clickCount} times.`;
+        let name = element.name.charAt(0).toUpperCase() + element.name.slice(1);
+        let resultText = `${name} was viewed ${element.showCount} times and voted for ${element.clickCount} times.`;
         let resultEl = document.createElement('li');
         resultEl.innerText = resultText;
 
@@ -108,6 +106,8 @@ function displayResults () {
     });
 
     document.getElementById('viewResults').style.display = 'none';
+    document.getElementById('resetData').style.display = 'block';
+    document.getElementById('takeAgain').style.display = 'block';
 
     showChart();
 
@@ -116,7 +116,11 @@ function displayResults () {
 // populates screen with a number of images from the productsArr
 function populateImages(number = 3) {
 
+    let numberOfImages = number;
     let displayEl = document.getElementById('productDisplay');
+
+    // array of image indices per invocation of populateImages();
+    let tempIndices = [];
     
     // displays 'view results' button when the max amount of rounds has been reached
     if (rounds >= maxRounds) {
@@ -127,17 +131,12 @@ function populateImages(number = 3) {
         }
 
         let buttonEl = document.getElementById('viewResults');
-        console.log(buttonEl);
+        // console.log(buttonEl);
         buttonEl.style.display = 'block';
         buttonEl.style.width = '25%';
         buttonEl.addEventListener('click', displayResults);
         return;
     }
-    
-    let numberOfImages = number;
-
-    // array of image indices per invocation of populateImages();
-    let tempIndices = [];
 
     // removes any child elements from the parent so that new images can be added
     while (displayEl.childElementCount > 0) {
@@ -175,9 +174,9 @@ function populateImages(number = 3) {
         displayEl.appendChild(productImage);
     }
 
-    console.log(previousRoundIndices);
-    console.log(tempIndices);
-    console.log(excludedIndices);
+    // console.log(previousRoundIndices);
+    // console.log(tempIndices);
+    // console.log(excludedIndices);
 
     // clears the array of the indices from last round in preparation for storing this current round's indices, which will become the previous round's indices the next time the function is invoked.
 
@@ -200,6 +199,38 @@ function populateImages(number = 3) {
 
     rounds++;
 }
+
+function savesToLocalStorage () {
+
+    if (localStorage.cachedProductArr) {
+        getsFromLocalStorage();
+    }
+    localStorage.setItem( 'cachedProductArr', JSON.stringify(productArr));
+}
+
+function getsFromLocalStorage () {
+
+    let parsedArr = JSON.parse(localStorage.getItem('cachedProductArr'));
+    let i = 0;
+
+    parsedArr.forEach(element => {
+        productArr[i].showCount += element.showCount;
+        productArr[i].clickCount += element.clickCount;
+        i++;
+    });
+
+}
+
+// clears local storage and resets 
+function handleResetData () {
+    localStorage.clear();
+    window.location.reload();
+}
+
+function handleTakeAgain () {
+    window.location.reload();
+}
+
 
 const canvasEl = document.getElementById('chartCanvas');
 const ctx = canvasEl.getContext('2d');
@@ -253,7 +284,9 @@ function showChart () {
 }
 
 
+document.getElementById('resetData').addEventListener('click', handleResetData);
+document.getElementById('takeAgain').addEventListener('click', handleTakeAgain);
 
 determineMaxRounds();
 generateProducts();
-console.log(productArr);
+// console.log(productArr);
