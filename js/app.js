@@ -13,6 +13,7 @@ let excludedIndices = [];
 // 'rounds' is current total number of rounds that have been played in one sitting, 'maxRounds' is set by the user 
 let rounds = 0;
 let maxRounds = 25;
+let numberOfImages = 3;
 
 // 'product' object constructor
 function Product (filePath) {
@@ -33,7 +34,7 @@ Product.prototype.incrementShowCount = function () {
 Product.prototype.incrementClickCount = function () {
     this.clickCount++;
     // console.log(productArr);
-    populateImages();
+    populateImages(numberOfImages);
 }
 
 // generates a random index depending on the length of an array
@@ -53,7 +54,8 @@ function generateProducts () {
 function startGame (event) {
     event.preventDefault();
     maxRounds = event.target.numberOfRounds.value;
-    populateImages();
+    populateImages(event.target.numberOfImages.value);
+    numberOfImages = event.target.numberOfImages.value;
 }
 
 // gets the user input for how many rounds they would like to play, populates screen with relevant html elements
@@ -69,7 +71,7 @@ function determineMaxRounds () {
     inputEl.type = 'number';
     inputEl.id = 'numberOfRounds';
     inputEl.name = 'numberOfRounds';
-
+    
     let labelEl = document.createElement('label');
     labelEl.setAttribute('for', 'numberOfRounds');
     labelEl.innerText = 'How Many Rounds of Odd Duck Would You Like To Play?';
@@ -79,11 +81,28 @@ function determineMaxRounds () {
     buttonEl.setAttribute('type', 'submit');
     buttonEl.innerText = 'Start Game';
 
-    formEl.addEventListener('submit', startGame);
+    let inputNumEl = document.createElement('input');
+    inputNumEl.type = 'number';
+    inputNumEl.max = '8';
+    inputNumEl.min = '3';
+    inputNumEl.id = 'numberOfImages';
+    inputNumEl.name = 'numberOfImages';
+
+    let labelNumEl = document.createElement('label');
+    labelNumEl.setAttribute('for', 'numberOfImages');
+    labelNumEl.innerText = 'How Many Images Do You Want To See Per Round? (Min: 3, Max: 8)';
+    labelNumEl.style.textAlign = 'center';
+
+    formEl.appendChild(labelNumEl);
+    formEl.appendChild(inputNumEl);
 
     formEl.appendChild(labelEl);
     formEl.appendChild(inputEl);
+
     formEl.appendChild(buttonEl);
+
+    formEl.addEventListener('submit', startGame);
+
     displayEl.appendChild(formEl);
     
 
@@ -283,6 +302,8 @@ function showChart () {
     );
 }
 
+
+Chart.defaults.color = '#FFFFFF';
 
 document.getElementById('resetData').addEventListener('click', handleResetData);
 document.getElementById('takeAgain').addEventListener('click', handleTakeAgain);

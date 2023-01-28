@@ -71,7 +71,7 @@ main {
     justify-content: center;
     align-items: center;
     width: 100%;
-    height: 25vh;
+    height: 30vh;
 }
 
 #roundsForm input {
@@ -79,6 +79,7 @@ main {
     text-align: center;
     background-color: rgb(255, 240, 175);
     color:rgb(0, 60, 116);
+    width: 20vw;
 }
 
 #roundsForm label{
@@ -165,7 +166,8 @@ button {
 }
 
 #chartContainer {
-    padding: 2rem;
+    width: 100%;
+    height: auto;
 }
 
 footer {
