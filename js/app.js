@@ -60,13 +60,12 @@ function startGame (event) {
 
 // gets the user input for how many rounds they would like to play, populates screen with relevant html elements
 function determineMaxRounds () {
-
+    // gets element where form will be appended itno
     let displayEl = document.getElementById('productDisplay');
-
+    // creates the initial form
     let formEl = document.createElement('form');
     formEl.id = 'roundsForm';
-    // console.log(formEl);
-
+    // creates input and label for number of rounds that the user will decide
     let inputEl = document.createElement('input');
     inputEl.type = 'number';
     inputEl.id = 'numberOfRounds';
@@ -76,11 +75,7 @@ function determineMaxRounds () {
     labelEl.setAttribute('for', 'numberOfRounds');
     labelEl.innerText = 'How Many Rounds of Odd Duck Would You Like To Play?';
     labelEl.style.textAlign = 'center';
-
-    let buttonEl = document.createElement('button');
-    buttonEl.setAttribute('type', 'submit');
-    buttonEl.innerText = 'Start Game';
-
+    //creates input and label for number of images that the user will decide
     let inputNumEl = document.createElement('input');
     inputNumEl.type = 'number';
     inputNumEl.max = '8';
@@ -92,29 +87,33 @@ function determineMaxRounds () {
     labelNumEl.setAttribute('for', 'numberOfImages');
     labelNumEl.innerText = 'How Many Images Do You Want To See Per Round? (Min: 3, Max: 8)';
     labelNumEl.style.textAlign = 'center';
-
+    // creates button that starts game when clicked/submitted
+    let buttonEl = document.createElement('button');
+    buttonEl.setAttribute('type', 'submit');
+    buttonEl.innerText = 'Start Game';
+    // appends all the 'number of images' elements to the form
     formEl.appendChild(labelNumEl);
     formEl.appendChild(inputNumEl);
-
+    // appends all the 'number of rounds' elements to the form
     formEl.appendChild(labelEl);
     formEl.appendChild(inputEl);
-
+    // adds the 'start game' button to the form 
     formEl.appendChild(buttonEl);
-
+    // gives 'start game' button an event handler   
     formEl.addEventListener('submit', startGame);
-
+    // appends form to the HTML
     displayEl.appendChild(formEl);
     
 
 }
 
-// shows results of products shown & clicked when user is finished
+// event handler function for the 'view results' button, shows results of products shown & clicked when user is finished
 function displayResults () {
 
     let resultListEl = document.getElementById('resultsList');
 
     savesToLocalStorage();
-
+    // creates a list item for each element in the product array, displays the name of the product and number of times shown and number of times clicked
     productArr.forEach(element => {
         let name = element.name.charAt(0).toUpperCase() + element.name.slice(1);
         let resultText = `${name} was viewed ${element.showCount} times and voted for ${element.clickCount} times.`;
@@ -123,11 +122,11 @@ function displayResults () {
 
         resultListEl.appendChild(resultEl);
     });
-
+    // hide view results button, adds the 'reset data' and 'take again' buttons viewable
     document.getElementById('viewResults').style.display = 'none';
     document.getElementById('resetData').style.display = 'block';
     document.getElementById('takeAgain').style.display = 'block';
-
+    // renders the bar graph results chart to the screen
     showChart();
 
 }
@@ -198,13 +197,12 @@ function populateImages(number = 3) {
     // console.log(excludedIndices);
 
     // clears the array of the indices from last round in preparation for storing this current round's indices, which will become the previous round's indices the next time the function is invoked.
-
     let loopLength = previousRoundIndices.length;
     for (let n = 0; n < loopLength; n++) {
         previousRoundIndices.pop();
     }
-
     loopLength = excludedIndices.length;
+
     // clears the array of indices in preparation for the next round
     for (let n = 0; n < loopLength; n++) {
         excludedIndices.pop();
@@ -245,7 +243,7 @@ function handleResetData () {
     localStorage.clear();
     window.location.reload();
 }
-
+// reloads the page
 function handleTakeAgain () {
     window.location.reload();
 }
